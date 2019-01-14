@@ -1,0 +1,32 @@
+package com.hivephing.mastery.hivephing.DataClasses
+
+import com.hivephing.mastery.hivephing.RetrofitCommunicates.ApiServiceInterface
+import io.reactivex.disposables.Disposable
+
+//Basic interaction url
+const val BaseUrl :String = "www.hivephing.com/anything you want";
+
+//this is the service helper class (really the instance of the networking object)
+val wikiApiServe by lazy {
+    ApiServiceInterface.create()
+}
+//helper class for the interaction with server while activities are destroyed
+var disposable: Disposable? = null
+
+//client class for the server check "/checkServer"
+data class Client(val client_id:Int=-1,val version:Int=-1,val title:String="",val message:String="",val status:Boolean=false)
+
+//user object for login register and userprofile "/login & /register"
+data class User(val userId : Int=-1,val name:String = "",val email:String = "",val password:String = "",val token:String = "",val status:String="",val activate:Boolean=false)
+
+//company object for company profile and coompany register "/company"
+data class Company(val companyId : Int=-1,val name: String="",val business_hub:Int=-1,val country_id:Int=-1,val city_id:Int=-1,val address:String="",val email: String="",val phone:String="",val website:String="",val facebook:String="",val investment:String="",val year_esta:Int=-1,val registration_status:String ="",val status:String="",val logo:String="",val description:String="",val ceo_name:String="",val ceo_email:String="")
+
+//project object for constract project "/project"
+data class Project(val projectId:Int=-1,val name: String="",val description: String="",val competator_count:Int=-1,val business_hub_id:Int=-1,val expire_date:String ="",val user_id : Int=-1,val attachment1 : String= "",val attachment2: String= "",val publish: Int=-1)
+
+//Message object for message showing "/message"
+data class Message(val messageId:Int=-1,val postId:Int=-1,val userId:Int=-1,val companyId: Int=-1,val fromUser:String="",val Message:String="",val status: String="")
+
+//Tender object for tender showing "/tender"
+data class Tender(val tenderId:Int=-1,val title:String="",val description: String="",val photo:String="",val business_hub_id: Int=-1,val op_id:Int=-1,val tender_point:Int=-1,val status: String="")
