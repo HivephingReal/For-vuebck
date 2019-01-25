@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\FirebaseModel;
 use App\Message;
 use App\Repair;
 use Carbon\Carbon;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 
 class AddController extends FirebasehelperController
 {
@@ -70,24 +72,16 @@ class AddController extends FirebasehelperController
             }
             if (!empty($request->file('file2'))) {
                 $file_name2 = Carbon::now()->timestamp . $request->file('file2')->getClientOriginalName();
-
                 if ($request->file('file2')->move(base_path() . '/public/user_attachments/', $file_name2)) {
-
                     DB::table('attachment')->insert(['user_id' => Auth::user()->id, 'project_id' => $nowid, 'position' => 2, 'file_name' => $file_name2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-
                 }
             }
             if (!empty($request->file('file3'))) {
-
                 $file_name3 = Carbon::now()->timestamp . $request->file('file3')->getClientOriginalName();
-
                 if ($request->file('file3')->move(base_path() . '/public/user_attachments/', $file_name3)) {
-
                     DB::table('attachment')->insert(['user_id' => Auth::user()->id, 'project_id' => $nowid, 'position' => 3, 'file_name' => $file_name3, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
-
                 }
             }
-
             return response()->json(['success' => 'true']);
         }
     }
@@ -157,7 +151,7 @@ class AddController extends FirebasehelperController
 
 
                 } else {
-                    DB::table('request')->where([['post_id', '=', $request->post_id], ['requester_id', '=', $request->user_id]])->update(['status' => 'rq']);
+                    DB::table('request')->where([['post_id', '=', $request->post_id],['requester_id', '=', $request->user_id]])->update(['status' => 'rq']);
                     return response()->json(['data' => $request->post_id,'success'=>'false']);
                 }
             } else {
@@ -169,10 +163,14 @@ class AddController extends FirebasehelperController
 
         }
         if(DB::table('request')->where([['post_id', '=', $request->post_id], ['requester_id', '=', $request->user_id]])->update(['status' => 'con'])){
-
+            $check_for_firebase = FirebaseModel::where('user_id', $request->user_id);
+            if($check_for_firebase->count() > 0) {
+                FirebasehelperController::sendnotimsg($body = str_limit($get_project_data->description, '150', '...') .'<br><br>'.'You had confirmed to see this project', $title = $get_project_data->name, $token = $check_for_firebase->first()->token, $post_id = $get_project_data->id);
+            }
         }
         return response()->json(['data' => $request->post_id,'success'=>'true']);
     }
+
 
     public function rate_this(Request $request)
     {
